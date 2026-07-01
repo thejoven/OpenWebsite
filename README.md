@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/admin/ow-logo.svg" alt="OpenWebsite logo" width="96" height="96" />
+</p>
+
 # OpenWebsite
 
 OpenWebsite 是一个 AI 原生的快速建站底座，基于 Next.js 16 App Router、TypeScript、Tailwind CSS、Prisma 和 SQLite。它不把价值放在固定前端模板上，而是提供稳定的内容、多语言、媒体、SEO、sitemap、robots 和 AI 运维 API 契约，让懂一点开发或使用 Codex 的用户可以把任意前端样式无缝接入。
