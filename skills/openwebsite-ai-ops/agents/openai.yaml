@@ -1,0 +1,4 @@
+interface:
+  display_name: "OpenWebsite AI Ops"
+  short_description: "Manage OpenWebsite content and SEO APIs"
+  default_prompt: "Use $openwebsite-ai-ops to connect content, multilingual articles, and SEO metadata to this site."

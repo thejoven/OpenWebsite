@@ -1,0 +1,12 @@
+.next/
+node_modules/
+.DS_Store
+dist/
+coverage/
+data/
+prisma/data/
+*.log
+.env
+.env*.local
+public/uploads/
+!.env.example

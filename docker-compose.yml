@@ -1,0 +1,18 @@
+services:
+  app:
+    build: .
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-file:../data/openwebsite.db}
+      PORT: 3000
+    ports:
+      - "${HOST_PORT:-3000}:3000"
+    volumes:
+      - openwebsite_data:/app/data
+      - openwebsite_uploads:/app/public/uploads
+    restart: unless-stopped
+
+volumes:
+  openwebsite_data:
+  openwebsite_uploads:

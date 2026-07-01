@@ -1,0 +1,84 @@
+{
+  "Nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Products / Services",
+    "articles": "Articles",
+    "contact": "Contact",
+    "admin": "Admin",
+    "quote": "Get a plan"
+  },
+  "Common": {
+    "readMore": "Read more",
+    "learnMore": "Learn more",
+    "publishedAt": "Published",
+    "category": "Category",
+    "all": "All",
+    "previous": "Previous",
+    "next": "Next",
+    "empty": "No content yet",
+    "viewArticles": "View articles",
+    "submit": "Submit",
+    "saving": "Submitting..."
+  },
+  "Home": {
+    "eyebrow": "SEO-first company website system",
+    "title": "Open-source company site with static front office and dynamic admin",
+    "subtitle": "OpenWebsite combines Next.js, SQLite and Prisma for multilingual content, article management, contact intake, ISR publishing and one-command Docker deployment.",
+    "primaryCta": "Start a conversation",
+    "secondaryCta": "View articles",
+    "proofCountries": "Multilingual SEO",
+    "proofProjects": "ISR publishing",
+    "proofPower": "SQLite deployment",
+    "productsTitle": "Core modules for company websites",
+    "productsSubtitle": "SEO pages, content operations, lead intake and deployment are designed as one operating loop.",
+    "whyTitle": "Why OpenWebsite",
+    "whySubtitle": "It is a website system you can operate, not only a homepage template.",
+    "recentTitle": "Latest articles"
+  },
+  "About": {
+    "title": "About OpenWebsite",
+    "subtitle": "An open-source starting point for company websites that balances search visibility, content operations and low-cost deployment.",
+    "body": "The default architecture combines a static public site with a dynamic admin. Public pages serve SEO-friendly HTML through ISR, and content changes trigger targeted revalidation.",
+    "missionTitle": "Design goal",
+    "missionBody": "Give companies a maintainable, deployable and extensible multilingual website foundation."
+  },
+  "Services": {
+    "title": "Products / Services",
+    "subtitle": "OpenWebsite ships the default modules needed to present a company, operate content, capture leads and deploy reliably."
+  },
+  "Articles": {
+    "title": "Articles & News",
+    "subtitle": "Filter company news, industry knowledge and project stories by category.",
+    "detailBack": "Back to articles"
+  },
+  "Contact": {
+    "title": "Contact us",
+    "subtitle": "Submissions are saved in the admin. If SMTP is configured, the administrator also receives an email notification.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "sourcePage": "Source page",
+    "success": "Thanks, your message was submitted.",
+    "error": "Submission failed. Please try again later.",
+    "submit": "Send message"
+  },
+  "Admin": {
+    "title": "OpenWebsite Admin",
+    "login": "Admin login",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "logout": "Sign out",
+    "dashboard": "Dashboard",
+    "categories": "Categories",
+    "articles": "Articles",
+    "contacts": "Contact submissions",
+    "newArticle": "New article",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "export": "Export CSV"
+  }
+}

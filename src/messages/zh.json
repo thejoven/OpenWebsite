@@ -1,0 +1,84 @@
+{
+  "Nav": {
+    "home": "首页",
+    "about": "关于我们",
+    "services": "产品 / 服务",
+    "articles": "文章",
+    "contact": "联系我们",
+    "admin": "后台",
+    "quote": "获取方案"
+  },
+  "Common": {
+    "readMore": "阅读更多",
+    "learnMore": "了解更多",
+    "publishedAt": "发布时间",
+    "category": "分类",
+    "all": "全部",
+    "previous": "上一页",
+    "next": "下一页",
+    "empty": "暂无内容",
+    "viewArticles": "查看文章",
+    "submit": "提交",
+    "saving": "提交中..."
+  },
+  "Home": {
+    "eyebrow": "SEO 优先的企业官网系统",
+    "title": "开源企业站，静态前台与动态后台一次到位",
+    "subtitle": "OpenWebsite 基于 Next.js、SQLite 与 Prisma，提供多语言内容、文章管理、联系表单、ISR 发布和 Docker 一键部署。",
+    "primaryCta": "开始咨询",
+    "secondaryCta": "查看文章",
+    "proofCountries": "多语言 SEO",
+    "proofProjects": "ISR 静态发布",
+    "proofPower": "SQLite 轻部署",
+    "productsTitle": "适合企业官网的核心模块",
+    "productsSubtitle": "前台 SEO、后台内容、联系线索与部署流程被设计成一个完整闭环。",
+    "whyTitle": "为什么选择 OpenWebsite",
+    "whySubtitle": "它不是只有首页的模板，而是一套可以持续运营内容和线索的企业站系统。",
+    "recentTitle": "最新文章"
+  },
+  "About": {
+    "title": "关于 OpenWebsite",
+    "subtitle": "一个面向企业官网的开源起点，兼顾搜索可见性、内容运营和低成本部署。",
+    "body": "系统默认使用静态化前台与动态后台结合的架构。公开页面通过 ISR 提供搜索引擎友好的 HTML，后台内容变更后按需刷新对应路径。",
+    "missionTitle": "设计目标",
+    "missionBody": "让中小企业也能拥有可维护、可部署、可扩展的多语言官网。"
+  },
+  "Services": {
+    "title": "产品 / 服务",
+    "subtitle": "OpenWebsite 的默认模块覆盖企业站从展示、内容、获客到部署的主要工作流。"
+  },
+  "Articles": {
+    "title": "文章与新闻",
+    "subtitle": "按分类筛选企业新闻、行业知识与项目案例。",
+    "detailBack": "返回文章列表"
+  },
+  "Contact": {
+    "title": "联系我们",
+    "subtitle": "提交需求后，后台会保存线索；如配置 SMTP，还会同步邮件通知管理员。",
+    "name": "姓名",
+    "email": "邮箱",
+    "phone": "电话",
+    "message": "留言",
+    "sourcePage": "来源页面",
+    "success": "提交成功，我们会尽快联系你。",
+    "error": "提交失败，请稍后再试。",
+    "submit": "发送留言"
+  },
+  "Admin": {
+    "title": "OpenWebsite 后台",
+    "login": "管理员登录",
+    "email": "邮箱",
+    "password": "密码",
+    "signIn": "登录",
+    "logout": "退出登录",
+    "dashboard": "概览",
+    "categories": "分类管理",
+    "articles": "文章管理",
+    "contacts": "联系记录",
+    "newArticle": "新建文章",
+    "edit": "编辑",
+    "delete": "删除",
+    "save": "保存",
+    "export": "导出 CSV"
+  }
+}

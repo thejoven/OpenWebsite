@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  mediaAssets  MediaAsset[]
+}
+
+model Category {
+  id           String                @id @default(cuid())
+  slug         String                @unique
+  sortOrder    Int                   @default(0)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  articles     Article[]
+  translations CategoryTranslation[]
+}
+
+model CategoryTranslation {
+  id             String   @id @default(cuid())
+  categoryId     String
+  locale         String
+  name           String
+  description    String?
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  category       Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@index([locale])
+}
+
+model Article {
+  id           String               @id @default(cuid())
+  slug         String               @unique
+  categoryId   String?
+  coverImage   String?
+  status       String               @default("DRAFT")
+  publishedAt  DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  category     Category?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  translations ArticleTranslation[]
+}
+
+model ArticleTranslation {
+  id             String  @id @default(cuid())
+  articleId      String
+  locale         String
+  title          String
+  summary        String
+  content        String
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  article        Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, locale])
+  @@index([locale])
+}
+
+model ContactSubmission {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  message    String
+  sourcePage String?
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([email])
+  @@index([isRead])
+}
+
+model SiteSetting {
+  id               String   @id @default("default")
+  siteName         String   @default("OpenWebsite")
+  siteUrl          String   @default("http://localhost:3000")
+  defaultLocale    String   @default("zh")
+  supportedLocales String   @default("zh,en")
+  seoTitle         String?
+  seoDescription   String?
+  seoKeywords      String?
+  ogImage          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model ScheduledTask {
+  id          String    @id @default(cuid())
+  taskKey     String    @unique
+  name        String
+  schedule    String
+  status      String    @default("ACTIVE")
+  description String?
+  lastRunAt   DateTime?
+  nextRunAt   DateTime?
+  lastResult  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  url          String   @unique
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  uploadedById String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([uploadedById])
+}
