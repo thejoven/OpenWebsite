@@ -9,4 +9,5 @@ prisma/data/
 .env
 .env*.local
 public/uploads/
+参考设计/
 !.env.example
