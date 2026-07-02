@@ -98,20 +98,20 @@ SQLite 数据库默认保存在容器 `/app/data/openwebsite.db`，并通过 `op
 
 ## 环境变量
 
-| 变量 | 说明 |
-| --- | --- |
-| `DATABASE_URL` | SQLite 连接，默认 `file:../data/openwebsite.db`，相对 `prisma/schema.prisma` 解析 |
-| `SITE_URL` / `NEXT_PUBLIC_SITE_URL` | 站点 URL，用于 canonical、sitemap 和 OG |
-| `HOST_PORT` | Docker 暴露到宿主机的端口 |
-| `PORT` | 容器内 Next.js 监听端口，默认 3000 |
-| `AUTH_SECRET` | 后台会话签名密钥 |
-| `AI_OPS_TOKEN` / `ADMIN_API_TOKEN` | AI 运维 API 的 Bearer token |
-| `AUTH_COOKIE_SECURE` | 是否给后台 session cookie 加 Secure；HTTP 内网测试设为 `false`，HTTPS 设为 `true` |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | seed 初始化管理员 |
-| `DEFAULT_LOCALE` | 默认语言 |
-| `SUPPORTED_LOCALES` | 逗号分隔语言列表 |
-| `SITE_NAME` / `SITE_DESCRIPTION` / `SITE_KEYWORDS` | SEO 默认值 |
-| `SMTP_*` | 可选邮件通知配置 |
+| 变量                                               | 说明                                                                              |
+| -------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                     | SQLite 连接，默认 `file:../data/openwebsite.db`，相对 `prisma/schema.prisma` 解析 |
+| `SITE_URL` / `NEXT_PUBLIC_SITE_URL`                | 站点 URL，用于 canonical、sitemap 和 OG                                           |
+| `HOST_PORT`                                        | Docker 暴露到宿主机的端口                                                         |
+| `PORT`                                             | 容器内 Next.js 监听端口，默认 3000                                                |
+| `AUTH_SECRET`                                      | 后台会话签名密钥                                                                  |
+| `AI_OPS_TOKEN` / `ADMIN_API_TOKEN`                 | AI 运维 API 的 Bearer token                                                       |
+| `AUTH_COOKIE_SECURE`                               | 是否给后台 session cookie 加 Secure；HTTP 内网测试设为 `false`，HTTPS 设为 `true` |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD`                   | seed 初始化管理员                                                                 |
+| `DEFAULT_LOCALE`                                   | 默认语言                                                                          |
+| `SUPPORTED_LOCALES`                                | 逗号分隔语言列表                                                                  |
+| `SITE_NAME` / `SITE_DESCRIPTION` / `SITE_KEYWORDS` | SEO 默认值                                                                        |
+| `SMTP_*`                                           | 可选邮件通知配置                                                                  |
 
 ## 内容模型
 
@@ -127,6 +127,7 @@ SQLite 数据库默认保存在容器 `/app/data/openwebsite.db`，并通过 `op
 
 - 后台入口：`/admin/ai-ops`
 - Markdown 文档：`docs/AI_OPERATIONS.md`
+- Agent 企业网站开发指南：`docs/AI_AGENT_ENTERPRISE_WEBSITE.md`
 - 项目内 Codex skill：`skills/openwebsite-ai-ops`
 - API 文档接口：`GET /api/ai/docs`
 - Markdown 下载接口：`GET /api/ai/docs?download=1`
