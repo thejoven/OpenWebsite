@@ -5,7 +5,7 @@ export const aiOpsEndpoints = [
   "GET|POST /api/ai/articles",
   "GET|PATCH|DELETE /api/ai/articles/:idOrSlug",
   "GET|POST /api/ai/media",
-  "GET /api/ai/seo-audit",
+  "GET|POST /api/ai/seo-audit",
   "GET /api/ai/docs",
   "GET /api/ai/skills"
 ] as const;

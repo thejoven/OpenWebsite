@@ -93,6 +93,7 @@ PATCH /api/ai/articles/:idOrSlug
 GET /api/ai/media
 POST /api/ai/media
 GET /api/ai/seo-audit
+POST /api/ai/seo-audit
 ```
 
 鉴权方式：
@@ -187,9 +188,11 @@ public/                  # 静态资源
 
 ```http
 GET /api/ai/seo-audit
+POST /api/ai/seo-audit
 ```
 
-优先修复低分页面、缺失描述、标题重复、正文过短和缺少封面图的问题。
+优先修复低分页面、缺失描述、标题重复、正文过短和缺少封面图的问题。配置 AI 后可以用
+`POST /api/ai/seo-audit` 自动修复可安全改写的文字 SEO 字段。
 
 ## 内容生产流程
 

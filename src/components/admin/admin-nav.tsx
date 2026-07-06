@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   Bot,
+  Cpu,
   FileText,
   FolderTree,
   Home,
@@ -30,6 +31,7 @@ const links = [
 
 const systemLinks = [
   { href: "/admin/system", label: "基础配置", icon: Settings },
+  { href: "/admin/system/ai", label: "AI 配置", icon: Cpu },
   { href: "/admin/system/admins", label: "管理员", icon: ShieldCheck },
   { href: "/admin/system/tasks", label: "定时任务", icon: Timer },
   { href: "/admin/system/media", label: "媒体库", icon: ImageIcon },

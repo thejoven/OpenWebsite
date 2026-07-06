@@ -37,6 +37,15 @@ export const siteSettingsSchema = z.object({
   ogImage: z.string().trim().max(300).optional().or(z.literal(""))
 });
 
+export const aiConfigurationSchema = z.object({
+  providerName: z.string().trim().min(1).max(80),
+  baseUrl: z.string().trim().url().max(240),
+  model: z.string().trim().min(1).max(120),
+  apiKey: z.string().trim().max(500).optional().or(z.literal("")),
+  temperature: z.coerce.number().min(0).max(1),
+  enabled: z.enum(["on", "off"]).optional()
+});
+
 export const adminUserSchema = z.object({
   id: z.string().optional(),
   email: z.string().trim().email().max(160),

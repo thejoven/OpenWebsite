@@ -169,6 +169,7 @@ Supported formats: JPG, PNG, WebP, GIF, SVG. Max size: 5MB.
 
 ```http
 GET /api/ai/seo-audit
+POST /api/ai/seo-audit
 ```
 
 Runs the same local SEO doctor used in the admin UI. It checks:
@@ -179,6 +180,10 @@ Runs the same local SEO doctor used in the admin UI. It checks:
 - article SEO title and description
 - article body length and Markdown structure
 - cover image and category assignment
+
+`POST /api/ai/seo-audit` runs the configured server-side AI auto-fix for fixable text issues and
+returns before/after score, issue count, changed field count, and fixed target count. Configure AI in
+`/admin/system/ai` or with `AI_BASE_URL`, `AI_MODEL`, and `AI_API_KEY`.
 
 ## Frontend Integration Contract
 
@@ -200,5 +205,6 @@ Custom frontends should rely on the data contract, not a bundled template:
 4. Upload needed images with `POST /api/ai/media`.
 5. Upsert categories and articles with localized SEO fields.
 6. Run `GET /api/ai/seo-audit`.
-7. Fix the lowest-score pages first.
+7. Use `POST /api/ai/seo-audit` for configured AI auto-fixes, then manually resolve non-text issues
+   such as missing cover images or category assignments.
 8. Rebuild/restart when locale configuration changes in production.

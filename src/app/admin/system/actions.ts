@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/password";
 import { revalidatePublicContent } from "@/lib/revalidate";
+import { AI_CONFIGURATION_ID } from "@/lib/ai-configuration";
 import {
   SITE_SETTINGS_ID,
   normalizeLocales,
@@ -14,6 +15,7 @@ import {
   trimTrailingSlash
 } from "@/lib/settings";
 import {
+  aiConfigurationSchema,
   adminUserSchema,
   scheduledTaskSchema,
   siteSettingsSchema
@@ -79,6 +81,50 @@ export async function saveSiteSettingsAction(formData: FormData) {
 
   revalidatePublicContent();
   redirect("/admin/system?saved=settings");
+}
+
+export async function saveAiConfigurationAction(formData: FormData) {
+  await requireAdmin();
+  const parsed = aiConfigurationSchema.safeParse({
+    providerName: formData.get("providerName"),
+    baseUrl: formData.get("baseUrl"),
+    model: formData.get("model"),
+    apiKey: formData.get("apiKey") || "",
+    temperature: formData.get("temperature"),
+    enabled: formData.get("enabled") === "on" ? "on" : "off"
+  });
+
+  if (!parsed.success) {
+    redirect("/admin/system/ai?error=ai");
+  }
+
+  const current = await prisma.aiConfiguration.findUnique({
+    where: { id: AI_CONFIGURATION_ID }
+  });
+  const apiKey = parsed.data.apiKey || current?.apiKey || null;
+
+  await prisma.aiConfiguration.upsert({
+    where: { id: AI_CONFIGURATION_ID },
+    update: {
+      providerName: parsed.data.providerName,
+      baseUrl: trimTrailingSlash(parsed.data.baseUrl),
+      model: parsed.data.model,
+      apiKey,
+      temperature: parsed.data.temperature,
+      enabled: parsed.data.enabled === "on"
+    },
+    create: {
+      id: AI_CONFIGURATION_ID,
+      providerName: parsed.data.providerName,
+      baseUrl: trimTrailingSlash(parsed.data.baseUrl),
+      model: parsed.data.model,
+      apiKey,
+      temperature: parsed.data.temperature,
+      enabled: parsed.data.enabled === "on"
+    }
+  });
+
+  redirect("/admin/system/ai?saved=ai");
 }
 
 export async function saveAdminUserAction(formData: FormData) {

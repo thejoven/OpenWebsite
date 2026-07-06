@@ -11,8 +11,8 @@ OpenWebsite 是一个 AI 原生的快速建站底座，基于 Next.js 16 App Rou
 - 多语言前台：`/[locale]` 路由，默认支持 `zh,en`
 - 页面基础：首页、关于我们、产品 / 服务、文章列表、文章详情、联系我们
 - SEO：动态 metadata、canonical、hreflang、Open Graph、Twitter Card、`sitemap.xml`、`robots.txt`、文章 JSON-LD、站点 / 分类 / 文章独立 SEO 字段
-- 后台：管理员登录、分类 CRUD、文章多语言 CRUD、联系记录搜索与 CSV 导出、系统管理、AI 运维接口文档
-- AI 运维：`/api/ai/*` 提供站点配置、分类、文章、媒体、SEO 诊断、Markdown 文档下载和 skill 打包下载接口
+- 后台：管理员登录、分类 CRUD、文章多语言 CRUD、联系记录搜索与 CSV 导出、系统管理、AI 配置、SEO 一键矫正、AI 运维接口文档
+- AI 运维：`/api/ai/*` 提供站点配置、分类、文章、媒体、SEO 诊断与自动矫正、Markdown 文档下载和 skill 打包下载接口
 - 联系接口：服务端校验、基础频率限制、SQLite 入库、可选 SMTP 通知
 - 发布：保存文章或分类后触发 `revalidatePath`
 - 部署：Docker 多阶段构建，`docker-compose up -d` 一键启动
@@ -69,6 +69,18 @@ npm run dev
 - 后台：`http://localhost:3000/admin`
 - AI 运维：`http://localhost:3000/admin/ai-ops`
 
+### 后台登录排障记忆
+
+后台默认账号来自 seed：`ADMIN_EMAIL` / `ADMIN_PASSWORD`，示例值为 `admin@example.com` / `ChangeMe123!`。登录页还需要填写页面上的算术验证码。
+
+如果 `/admin/login` 页面能打开，但提交正确账号、密码和验证码后报 500，优先检查 dev server 是否加载了 `DATABASE_URL`。登录 action 会调用 Prisma 查询 `User`；缺少 `DATABASE_URL` 时会在 `loginWithEmail -> prisma.user.findUnique()` 处抛 `PrismaClientInitializationError: Environment variable not found: DATABASE_URL`。本地常用值：
+
+```env
+DATABASE_URL="file:../data/openwebsite.db"
+```
+
+修改 `.env` 后需要重启 `npm run dev`，否则 Next 进程不会重新继承环境变量。
+
 ## 常用命令
 
 ```bash
@@ -111,6 +123,8 @@ SQLite 数据库默认保存在容器 `/app/data/openwebsite.db`，并通过 `op
 | `DEFAULT_LOCALE`                                   | 默认语言                                                                          |
 | `SUPPORTED_LOCALES`                                | 逗号分隔语言列表                                                                  |
 | `SITE_NAME` / `SITE_DESCRIPTION` / `SITE_KEYWORDS` | SEO 默认值                                                                        |
+| `AI_PROVIDER_NAME` / `AI_BASE_URL` / `AI_MODEL`    | SEO 自动矫正使用的 OpenAI 兼容接口配置                                            |
+| `AI_API_KEY` / `AI_TEMPERATURE`                    | SEO 自动矫正使用的服务端 AI 密钥与生成温度                                        |
 | `SMTP_*`                                           | 可选邮件通知配置                                                                  |
 
 ## 内容模型
@@ -133,6 +147,7 @@ SQLite 数据库默认保存在容器 `/app/data/openwebsite.db`，并通过 `op
 - Markdown 下载接口：`GET /api/ai/docs?download=1`
 - Skill 打包接口：`GET /api/ai/skills`
 - 发现接口：`GET /api/ai/context`
+- SEO 诊断与自动矫正：`GET|POST /api/ai/seo-audit`
 
 AI coding agent 应优先通过 `/api/ai/*` 修改内容和 SEO，而不是直接改数据库。前端模板由用户自己实现；模板只需要遵守多语言路由、文章 Markdown、SEO metadata 和媒体 URL 的契约。
 

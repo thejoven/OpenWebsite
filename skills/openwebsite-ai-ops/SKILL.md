@@ -18,7 +18,7 @@ frontend design.
 4. Upload images with `POST /api/ai/media` before referencing them in covers or Markdown.
 5. Upsert categories and articles with all required locale translations and SEO fields.
 6. Run `GET /api/ai/seo-audit`.
-7. Fix the lowest-score pages first.
+7. Use `POST /api/ai/seo-audit` for configured AI auto-fixes, then manually resolve non-text issues.
 8. Rebuild or restart the app after changing supported locales in production.
 
 ## Auth

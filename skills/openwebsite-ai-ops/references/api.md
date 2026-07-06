@@ -136,6 +136,11 @@ curl -H "Authorization: Bearer $AI_OPS_TOKEN" \
 
 Response `data.url` can be used as article `coverImage` or Markdown image URL.
 
-## GET /api/ai/seo-audit
+## GET|POST /api/ai/seo-audit
 
-Returns average score, page count, issue count, and page-level audits. Use this after content writes.
+`GET` returns average score, page count, issue counts, and page-level audits. Each issue includes a
+`fixable` flag for AI-safe text fixes.
+
+`POST` runs the configured server-side AI auto-fix for fixable text issues and returns before/after
+score, issue count, changed field count, and fixed target count. Configure AI in `/admin/system/ai`
+or with `AI_BASE_URL`, `AI_MODEL`, and `AI_API_KEY`.

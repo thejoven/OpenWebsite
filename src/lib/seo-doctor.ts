@@ -3,20 +3,47 @@ import { type PublicSiteSettings } from "./settings";
 
 type SeoSeverity = "严重" | "提醒";
 
+export type SeoIssue = {
+  severity: SeoSeverity;
+  code: string;
+  message: string;
+  suggestion: string;
+  fixable: boolean;
+};
+
+export type SeoAuditTarget =
+  | {
+      kind: "site";
+      id: "default";
+    }
+  | {
+      kind: "category";
+      id: string;
+      locale: string;
+      slug: string;
+    }
+  | {
+      kind: "article";
+      id: string;
+      locale: string;
+      slug: string;
+    };
+
 export type SeoPageAudit = {
   url: string;
   title: string;
   type: "基础页面" | "文章" | "分类";
+  target: SeoAuditTarget;
   score: number;
-  issues: {
-    severity: SeoSeverity;
-    message: string;
-    suggestion: string;
-  }[];
+  fixableIssues: number;
+  issues: SeoIssue[];
 };
 
 function scoreFromIssues(issues: SeoPageAudit["issues"]) {
-  const penalty = issues.reduce((total, issue) => total + (issue.severity === "严重" ? 18 : 8), 0);
+  const penalty = issues.reduce(
+    (total, issue) => total + (issue.severity === "严重" ? 18 : 8),
+    0
+  );
   return Math.max(0, 100 - penalty);
 }
 
@@ -25,20 +52,26 @@ function addLengthIssue({
   value,
   label,
   min,
-  max
+  max,
+  code,
+  fixable = true
 }: {
   issues: SeoPageAudit["issues"];
   value: string | null | undefined;
   label: string;
   min: number;
   max: number;
+  code: string;
+  fixable?: boolean;
 }) {
   const length = value?.trim().length || 0;
   if (!length) {
     issues.push({
       severity: "严重",
+      code: `${code}_missing`,
       message: `${label}为空`,
-      suggestion: `补充${label}，并保持在 ${min}-${max} 个字符左右。`
+      suggestion: `补充${label}，并保持在 ${min}-${max} 个字符左右。`,
+      fixable
     });
     return;
   }
@@ -46,14 +79,28 @@ function addLengthIssue({
   if (length < min || length > max) {
     issues.push({
       severity: "提醒",
+      code: `${code}_length`,
       message: `${label}长度为 ${length} 个字符`,
-      suggestion: `建议将${label}控制在 ${min}-${max} 个字符。`
+      suggestion: `建议将${label}控制在 ${min}-${max} 个字符。`,
+      fixable
     });
   }
 }
 
-function pickTranslation<T extends { locale: string }>(rows: T[], locale: string, defaultLocale: string) {
-  return rows.find((row) => row.locale === locale) || rows.find((row) => row.locale === defaultLocale) || rows[0];
+function fixableIssueCount(issues: SeoPageAudit["issues"]) {
+  return issues.filter((issue) => issue.fixable).length;
+}
+
+function pickTranslation<T extends { locale: string }>(
+  rows: T[],
+  locale: string,
+  defaultLocale: string
+) {
+  return (
+    rows.find((row) => row.locale === locale) ||
+    rows.find((row) => row.locale === defaultLocale) ||
+    rows[0]
+  );
 }
 
 function route(settings: PublicSiteSettings, locale: string, path = "") {
@@ -69,29 +116,36 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
     value: settings.seoTitle,
     label: "网站 SEO 标题",
     min: 20,
-    max: 70
+    max: 70,
+    code: "site_seo_title"
   });
   addLengthIssue({
     issues: siteIssues,
     value: settings.seoDescription,
     label: "网站 SEO 描述",
     min: 70,
-    max: 180
+    max: 180,
+    code: "site_seo_description"
   });
 
   if (settings.siteUrl.includes("localhost")) {
     siteIssues.push({
       severity: "提醒",
+      code: "site_url_localhost",
       message: "站点 URL 仍是 localhost",
-      suggestion: "上线前改为正式域名，确保 canonical、sitemap 和分享链接正确。"
+      suggestion:
+        "上线前改为正式域名，确保 canonical、sitemap 和分享链接正确。",
+      fixable: false
     });
   }
 
   if (!settings.ogImage) {
     siteIssues.push({
       severity: "提醒",
+      code: "site_og_image_missing",
       message: "未配置默认 OG 图片",
-      suggestion: "上传 1200x630 左右的社交分享图。"
+      suggestion: "上传 1200x630 左右的社交分享图。",
+      fixable: false
     });
   }
 
@@ -109,7 +163,9 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
         url: route(settings, locale, page.path),
         title: `${page.title} (${locale})`,
         type: "基础页面",
+        target: { kind: "site", id: "default" },
         score: scoreFromIssues(siteIssues),
+        fixableIssues: fixableIssueCount(siteIssues),
         issues: siteIssues
       });
     }
@@ -135,7 +191,11 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
 
   for (const category of categories) {
     for (const locale of settings.supportedLocales) {
-      const translation = pickTranslation(category.translations, locale, settings.defaultLocale);
+      const translation = pickTranslation(
+        category.translations,
+        locale,
+        settings.defaultLocale
+      );
       const issues: SeoPageAudit["issues"] = [];
 
       addLengthIssue({
@@ -143,35 +203,42 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
         value: translation?.name,
         label: "分类名称",
         min: 2,
-        max: 60
+        max: 60,
+        code: "category_name",
+        fixable: false
       });
       addLengthIssue({
         issues,
         value: translation?.description,
         label: "分类描述",
         min: 20,
-        max: 160
+        max: 160,
+        code: "category_description"
       });
       addLengthIssue({
         issues,
         value: translation?.seoTitle,
         label: "分类 SEO 标题",
         min: 12,
-        max: 70
+        max: 70,
+        code: "category_seo_title"
       });
       addLengthIssue({
         issues,
         value: translation?.seoDescription,
         label: "分类 SEO 描述",
         min: 70,
-        max: 180
+        max: 180,
+        code: "category_seo_description"
       });
 
       if (category._count.articles === 0) {
         issues.push({
           severity: "提醒",
+          code: "category_articles_empty",
           message: "分类下暂无文章",
-          suggestion: "补充相关文章，或暂时隐藏该分类入口。"
+          suggestion: "补充相关文章，或暂时隐藏该分类入口。",
+          fixable: false
         });
       }
 
@@ -179,7 +246,14 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
         url: route(settings, locale, `/articles?category=${category.slug}`),
         title: `${translation?.name || category.slug} (${locale})`,
         type: "分类",
+        target: {
+          kind: "category",
+          id: category.id,
+          locale,
+          slug: category.slug
+        },
         score: scoreFromIssues(issues),
+        fixableIssues: fixableIssueCount(issues),
         issues
       });
     }
@@ -187,7 +261,11 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
 
   for (const article of articles) {
     for (const locale of settings.supportedLocales) {
-      const translation = pickTranslation(article.translations, locale, settings.defaultLocale);
+      const translation = pickTranslation(
+        article.translations,
+        locale,
+        settings.defaultLocale
+      );
       const issues: SeoPageAudit["issues"] = [];
 
       addLengthIssue({
@@ -195,45 +273,55 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
         value: translation?.seoTitle || translation?.title,
         label: "文章 SEO 标题",
         min: 20,
-        max: 70
+        max: 70,
+        code: "article_seo_title"
       });
       addLengthIssue({
         issues,
         value: translation?.seoDescription || translation?.summary,
         label: "文章 SEO 描述",
         min: 70,
-        max: 180
+        max: 180,
+        code: "article_seo_description"
       });
 
       if (!translation?.content || translation.content.trim().length < 300) {
         issues.push({
           severity: "提醒",
+          code: "article_content_short",
           message: "正文内容偏短",
-          suggestion: "补充更完整的正文，覆盖用户问题、方案、参数或案例。"
+          suggestion: "补充更完整的正文，覆盖用户问题、方案、参数或案例。",
+          fixable: true
         });
       }
 
       if (translation?.content && !/^##\s+/m.test(translation.content)) {
         issues.push({
           severity: "提醒",
+          code: "article_content_missing_h2",
           message: "正文缺少二级标题",
-          suggestion: "使用清晰小标题帮助搜索引擎和用户理解结构。"
+          suggestion: "使用清晰小标题帮助搜索引擎和用户理解结构。",
+          fixable: true
         });
       }
 
       if (!article.coverImage) {
         issues.push({
           severity: "提醒",
+          code: "article_cover_missing",
           message: "缺少封面图",
-          suggestion: "上传与文章主题相关的封面图，并用于 Open Graph 分享。"
+          suggestion: "上传与文章主题相关的封面图，并用于 Open Graph 分享。",
+          fixable: false
         });
       }
 
       if (!article.category) {
         issues.push({
           severity: "提醒",
+          code: "article_category_missing",
           message: "文章未绑定分类",
-          suggestion: "选择一个相关分类，增强内容聚合和内部链接。"
+          suggestion: "选择一个相关分类，增强内容聚合和内部链接。",
+          fixable: false
         });
       }
 
@@ -241,21 +329,38 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
         url: route(settings, locale, `/articles/${article.slug}`),
         title: `${translation?.title || article.slug} (${locale})`,
         type: "文章",
+        target: {
+          kind: "article",
+          id: article.id,
+          locale,
+          slug: article.slug
+        },
         score: scoreFromIssues(issues),
+        fixableIssues: fixableIssueCount(issues),
         issues
       });
     }
   }
 
   const averageScore = audits.length
-    ? Math.round(audits.reduce((total, audit) => total + audit.score, 0) / audits.length)
+    ? Math.round(
+        audits.reduce((total, audit) => total + audit.score, 0) / audits.length
+      )
     : 0;
-  const totalIssues = audits.reduce((total, audit) => total + audit.issues.length, 0);
+  const totalIssues = audits.reduce(
+    (total, audit) => total + audit.issues.length,
+    0
+  );
+  const totalFixableIssues = audits.reduce(
+    (total, audit) => total + audit.fixableIssues,
+    0
+  );
 
   return {
     averageScore,
     totalPages: audits.length,
     totalIssues,
+    totalFixableIssues,
     audits: audits.sort((a, b) => a.score - b.score)
   };
 }

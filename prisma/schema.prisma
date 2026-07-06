@@ -100,6 +100,18 @@ model SiteSetting {
   updatedAt        DateTime @updatedAt
 }
 
+model AiConfiguration {
+  id           String   @id @default("default")
+  providerName String   @default("OpenAI Compatible")
+  baseUrl      String   @default("https://api.openai.com/v1")
+  model        String   @default("gpt-4o-mini")
+  apiKey       String?
+  temperature  Float    @default(0.2)
+  enabled      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model ScheduledTask {
   id          String    @id @default(cuid())
   taskKey     String    @unique
