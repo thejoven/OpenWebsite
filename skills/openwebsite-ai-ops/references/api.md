@@ -15,7 +15,7 @@ Returns:
 - product positioning
 - current site settings and supported locales
 - content/media counts
-- route patterns for custom frontends
+- route patterns for custom frontends, including `/:locale/articles/category/:slug`
 - endpoint list
 - documentation, downloads, and skill paths
 
@@ -44,7 +44,7 @@ Patch payload:
   "defaultLocale": "zh",
   "supportedLocales": ["zh", "en"],
   "seoTitle": "SWT Power | Industrial power solutions",
-  "seoDescription": "Industrial generator sets, gas power stations, and service content.",
+  "seoDescription": "Industrial generator sets, gas power stations, multilingual SEO content, and service operations for growing company websites.",
   "seoKeywords": "generator, gas power, diesel generator",
   "ogImage": "/uploads/2026/07/cover.webp"
 }
@@ -64,21 +64,24 @@ locales.
   "translations": {
     "zh": {
       "name": "工业电力",
-      "description": "柴油、燃气与混合能源解决方案。",
+      "description": "柴油、燃气与混合能源解决方案内容，覆盖选型、部署和运维。",
       "seoTitle": "工业电力解决方案",
-      "seoDescription": "面向工业企业的柴油发电、燃气发电与备用电源内容。",
+      "seoDescription": "面向工业企业的柴油发电、燃气发电与混合能源内容，覆盖选型、部署、运维、备用电源规划和项目交付关键问题，帮助团队建立可靠供电方案。",
       "seoKeywords": "工业电力,柴油发电机,燃气发电"
     },
     "en": {
       "name": "Industrial Power",
       "description": "Diesel, gas and hybrid power solutions.",
       "seoTitle": "Industrial Power Solutions",
-      "seoDescription": "Diesel generator, gas power, and standby power content for industrial teams.",
+      "seoDescription": "Diesel generator, gas power, hybrid energy, standby power, and project planning content for industrial teams.",
       "seoKeywords": "industrial power,diesel generator,gas power"
     }
   }
 }
 ```
+
+Public category landing pages use `/:locale/articles/category/:slug` and should use per-locale
+category SEO fields for title, description, keywords, and topical intro copy.
 
 ## GET|POST /api/ai/articles
 
@@ -102,7 +105,7 @@ Filters:
       "summary": "从功率、负载、冗余、噪音和运维角度建立选型框架。",
       "content": "## 先明确负载类型\n\n正文 Markdown...",
       "seoTitle": "柴油发电机组选型指南",
-      "seoDescription": "面向工业企业的柴油发电机组选型指南，覆盖功率、负载、冗余和运维。",
+      "seoDescription": "面向工业企业的柴油发电机组选型指南，覆盖功率、负载、冗余、运行时长、现场环境、并机需求、燃油条件和长期运维规划。",
       "seoKeywords": "柴油发电机,备用电源,工业电力"
     },
     "en": {
@@ -110,7 +113,7 @@ Filters:
       "summary": "A practical framework for sizing standby power.",
       "content": "## Start with the load profile\n\nMarkdown body...",
       "seoTitle": "Diesel Generator Selection Guide",
-      "seoDescription": "A practical diesel generator selection guide for industrial companies.",
+      "seoDescription": "A practical diesel generator selection guide for industrial companies, covering load sizing, redundancy, runtime, and service planning.",
       "seoKeywords": "diesel generator,standby power,industrial power"
     }
   }

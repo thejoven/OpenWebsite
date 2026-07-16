@@ -1,4 +1,4 @@
-import { Clock3 } from "lucide-react";
+import { Clock3, RefreshCw } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
 import {
   formatDateTime,
@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { SITEMAP_REFRESH_TASK_KEY } from "@/lib/sitemap";
 import { ensureScheduledTasks } from "@/lib/system-tasks";
-import { saveScheduledTaskAction } from "../actions";
+import { refreshSitemapTaskAction, saveScheduledTaskAction } from "../actions";
 
 export default async function SystemTasksPage({
   searchParams
@@ -46,6 +47,7 @@ export default async function SystemTasksPage({
                 key={task.id}
               >
                 <input name="id" type="hidden" value={task.id} />
+                <input name="returnTo" type="hidden" value="tasks" />
                 <div className="grid gap-4 lg:grid-cols-[1fr_180px_150px]">
                   <label>
                     <span className="admin-label">任务名称</span>
@@ -91,10 +93,27 @@ export default async function SystemTasksPage({
                     {formatDateTime(task.lastRunAt)} · 下次运行{" "}
                     {formatDateTime(task.nextRunAt)}
                   </span>
-                  <Button label={false} type="submit" variant="secondary">
-                    保存任务
-                  </Button>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {task.taskKey === SITEMAP_REFRESH_TASK_KEY ? (
+                      <Button
+                        formAction={refreshSitemapTaskAction}
+                        label={false}
+                        type="submit"
+                      >
+                        <RefreshCw aria-hidden className="h-4 w-4" />
+                        立即刷新
+                      </Button>
+                    ) : null}
+                    <Button label={false} type="submit" variant="secondary">
+                      保存任务
+                    </Button>
+                  </div>
                 </div>
+                {task.lastResult ? (
+                  <p className="mt-3 break-all text-xs text-[var(--admin-muted)]">
+                    上次结果：{task.lastResult}
+                  </p>
+                ) : null}
               </form>
             ))}
           </div>

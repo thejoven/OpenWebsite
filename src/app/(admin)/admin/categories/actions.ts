@@ -28,6 +28,13 @@ export async function saveCategoryAction(formData: FormData) {
     redirect("/admin/categories?error=invalid");
   }
 
+  const currentCategory = parsed.data.id
+    ? await prisma.category.findUnique({
+        where: { id: parsed.data.id },
+        select: { slug: true }
+      })
+    : null;
+
   const category = parsed.data.id
     ? await prisma.category.update({
         where: { id: parsed.data.id },
@@ -77,7 +84,7 @@ export async function saveCategoryAction(formData: FormData) {
     });
   }
 
-  revalidatePublicContent();
+  revalidatePublicContent(undefined, [currentCategory?.slug, category.slug]);
   redirect("/admin/categories?saved=1");
 }
 
@@ -88,12 +95,17 @@ export async function deleteCategoryAction(formData: FormData) {
     redirect("/admin/categories?error=missing");
   }
 
+  const category = await prisma.category.findUnique({
+    where: { id },
+    select: { slug: true }
+  });
+
   await prisma.article.updateMany({
     where: { categoryId: id },
     data: { categoryId: null }
   });
   await prisma.category.delete({ where: { id } });
 
-  revalidatePublicContent();
+  revalidatePublicContent(undefined, category?.slug);
   redirect("/admin/categories?deleted=1");
 }

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireAiOpsActor } from "@/lib/ai-ops-auth";
-import { serializeCategory, upsertCategoryFromJson } from "@/lib/ai-ops-content";
+import {
+  serializeCategory,
+  upsertCategoryFromJson
+} from "@/lib/ai-ops-content";
 import { prisma } from "@/lib/db";
 import { revalidatePublicContent } from "@/lib/revalidate";
 
@@ -23,7 +26,7 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
     const category = await upsertCategoryFromJson(payload);
-    revalidatePublicContent();
+    revalidatePublicContent(undefined, category.slug);
     return NextResponse.json({ data: serializeCategory(category) });
   } catch (error) {
     return NextResponse.json(

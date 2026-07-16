@@ -38,6 +38,8 @@ The app must be configured with the same `AI_OPS_TOKEN` or `ADMIN_API_TOKEN`.
 - Keep article body content in Markdown.
 - Use `categorySlug` for article writes when possible; it is stable for AI workflows.
 - Write SEO per locale: site, category, and article metadata are separate.
+- Treat `/:locale/articles/category/:slug` as the canonical category landing route; query filtering
+  on `/articles?category=:slug` is compatibility-only.
 - Prefer API writes over direct database edits unless the API cannot express the change.
 
 ## References

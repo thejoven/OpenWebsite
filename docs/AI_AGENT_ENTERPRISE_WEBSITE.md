@@ -143,7 +143,8 @@ curl -H "Authorization: Bearer $AI_OPS_TOKEN" http://localhost:3000/api/ai/conte
 开发前端时应遵守项目已有结构：
 
 ```text
-src/app/[locale]/        # 多语言前台页面
+src/app/(site)/[locale]/ # 多语言前台页面
+src/app/(admin)/admin/   # 后台页面
 src/components/site/     # 前台组件
 src/components/ui/       # 基础 UI 组件
 src/lib/                 # 内容、SEO、设置和工具函数
@@ -333,7 +334,7 @@ npm run dev
 
 ```text
 在不删除现有文章和后台功能的前提下，重新设计前台视觉。
-保留 /[locale]、/[locale]/articles、/[locale]/articles/[slug]、/[locale]/contact 路由。
+保留 /[locale]、/[locale]/articles、/[locale]/articles/category/[slug]、/[locale]/articles/[slug]、/[locale]/contact 路由。
 请复用已有内容读取和 SEO 工具函数，完成移动端检查。
 ```
 

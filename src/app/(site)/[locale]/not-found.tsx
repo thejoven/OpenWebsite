@@ -7,7 +7,10 @@ export default function NotFound() {
       <div>
         <p className="text-sm font-bold uppercase text-[#0e4fa0]">404</p>
         <h1 className="mt-3 text-4xl font-black">Page not found</h1>
-        <Link className="mt-8 inline-flex rounded-md bg-[#0e4fa0] px-5 py-3 font-bold text-white" href={`/${defaultLocale}`}>
+        <Link
+          className="mt-8 inline-flex rounded-md bg-[#0e4fa0] px-5 py-3 font-bold text-white"
+          href={`/${defaultLocale}`}
+        >
           Go home
         </Link>
       </div>

@@ -1,7 +1,17 @@
-import { Activity, Bot, Globe2, SearchCheck, Sparkles } from "lucide-react";
+import {
+  Activity,
+  Bot,
+  ExternalLink,
+  Globe2,
+  Map,
+  RefreshCw,
+  SearchCheck,
+  Sparkles
+} from "lucide-react";
 import Link from "next/link";
 import { AdminShell } from "@/components/admin/admin-shell";
 import {
+  formatDateTime,
   scoreColor,
   SystemHeader
 } from "@/components/admin/system/system-common";
@@ -20,7 +30,9 @@ import {
 import { getAiConfiguration } from "@/lib/ai-configuration";
 import { requireAdmin } from "@/lib/auth";
 import { runSeoDoctor } from "@/lib/seo-doctor";
+import { getSitemapAutomationSummary } from "@/lib/sitemap";
 import { getSiteSettings } from "@/lib/settings";
+import { refreshSitemapTaskAction } from "../actions";
 import { fixSeoIssuesAction } from "./actions";
 
 export default async function SystemSeoPage({
@@ -35,13 +47,19 @@ export default async function SystemSeoPage({
     issuesAfter?: string;
     fields?: string;
     targets?: string;
+    sitemap?: string;
+    entries?: string;
+    categories?: string;
+    articles?: string;
+    locales?: string;
   }>;
 }) {
   const session = await requireAdmin();
-  const [query, settings, aiConfig] = await Promise.all([
+  const [query, settings, aiConfig, sitemapStatus] = await Promise.all([
     searchParams,
     getSiteSettings(),
-    getAiConfiguration()
+    getAiConfiguration(),
+    getSitemapAutomationSummary()
   ]);
   const seoAudit = await runSeoDoctor(settings);
   const canAutoFix =
@@ -85,11 +103,20 @@ export default async function SystemSeoPage({
         <Alert className="mt-5" variant="destructive">
           {query.error === "ai-config"
             ? "请先完成 AI 配置并启用自动矫正。"
-            : "AI 矫正失败，请检查模型、Base URL 或 API Key。"}
+            : query.error === "sitemap"
+              ? "Sitemap 刷新失败，请检查站点配置和数据库连接。"
+              : "AI 矫正失败，请检查模型、Base URL 或 API Key。"}
+        </Alert>
+      ) : null}
+      {query.sitemap === "refreshed" ? (
+        <Alert className="mt-5" variant="success">
+          Sitemap 已刷新：{query.entries || "0"} 个 URL，
+          {query.categories || "0"} 个分类 URL，{query.articles || "0"} 个文章
+          URL，{query.locales || "0"} 个语言。
         </Alert>
       ) : null}
 
-      <div className="mt-8 grid gap-4 md:grid-cols-4">
+      <div className="mt-8 grid gap-4 md:grid-cols-5">
         <Card>
           <CardContent>
             <Activity
@@ -145,7 +172,58 @@ export default async function SystemSeoPage({
             </p>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent>
+            <Map aria-hidden className="h-5 w-5 text-[var(--admin-green)]" />
+            <p className="mt-3 text-3xl font-bold text-white">
+              {sitemapStatus.entryCount}
+            </p>
+            <p className="text-sm font-bold text-[var(--admin-muted)]">
+              Sitemap URL 数
+            </p>
+          </CardContent>
+        </Card>
       </div>
+
+      <Card className="mt-4">
+        <CardContent className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="admin-section-title">
+              <Map aria-hidden className="h-5 w-5" />
+              Sitemap 自动化
+            </h2>
+            <p className="mt-2 break-all text-sm text-[var(--admin-muted)]">
+              {sitemapStatus.sitemapUrl}
+            </p>
+            <p className="mt-2 text-sm text-[var(--admin-muted)]">
+              静态 URL {sitemapStatus.staticPageCount} 个 · 分类 URL{" "}
+              {sitemapStatus.categoryPageCount} 个 · 文章 URL{" "}
+              {sitemapStatus.articlePageCount} 个 · 语言{" "}
+              {sitemapStatus.locales.join(", ")} · 最近内容更新{" "}
+              {formatDateTime(sitemapStatus.lastContentModifiedAt)}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button asChild label={false} variant="secondary">
+              <a
+                href={sitemapStatus.sitemapUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <ExternalLink aria-hidden className="h-4 w-4" />
+                打开 XML
+              </a>
+            </Button>
+            <form action={refreshSitemapTaskAction}>
+              <input name="returnTo" type="hidden" value="seo" />
+              <Button label={false} type="submit">
+                <RefreshCw aria-hidden className="h-4 w-4" />
+                立即刷新
+              </Button>
+            </form>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card className="mt-8 overflow-x-auto">
         <Table>

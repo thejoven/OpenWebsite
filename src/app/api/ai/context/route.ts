@@ -30,7 +30,8 @@ export async function GET(request: Request) {
       home: "/:locale",
       articles: "/:locale/articles",
       articleDetail: "/:locale/articles/:slug",
-      categoryFilter: "/:locale/articles?category=:slug",
+      categoryLanding: "/:locale/articles/category/:slug",
+      legacyCategoryFilter: "/:locale/articles?category=:slug",
       sitemap: "/sitemap.xml",
       robots: "/robots.txt"
     },

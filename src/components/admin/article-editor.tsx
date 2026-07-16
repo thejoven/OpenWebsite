@@ -5,7 +5,7 @@ import type {
   CategoryTranslation
 } from "@prisma/client";
 import { Globe2, Save } from "lucide-react";
-import { saveArticleAction } from "@/app/admin/articles/actions";
+import { saveArticleAction } from "@/app/(admin)/admin/articles/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

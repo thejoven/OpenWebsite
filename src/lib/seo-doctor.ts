@@ -243,7 +243,7 @@ export async function runSeoDoctor(settings: PublicSiteSettings) {
       }
 
       audits.push({
-        url: route(settings, locale, `/articles?category=${category.slug}`),
+        url: route(settings, locale, `/articles/category/${category.slug}`),
         title: `${translation?.name || category.slug} (${locale})`,
         type: "分类",
         target: {

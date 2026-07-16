@@ -16,7 +16,10 @@ async function findArticle(identifier: string) {
   });
 }
 
-export async function GET(request: Request, { params }: { params: Promise<{ identifier: string }> }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ identifier: string }> }
+) {
   const { actor, response } = await requireAiOpsActor(request);
   if (!actor) return response;
 
@@ -29,7 +32,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ iden
   return NextResponse.json({ data: serializeArticle(article) });
 }
 
-export async function PATCH(request: Request, { params }: { params: Promise<{ identifier: string }> }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ identifier: string }> }
+) {
   const { actor, response } = await requireAiOpsActor(request);
   if (!actor) return response;
 
@@ -45,15 +51,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       ...payload,
       id: current.id,
       slug: payload.slug || current.slug,
-      categoryId: payload.categoryId || (payload.categorySlug ? "" : current.categoryId || ""),
+      categoryId:
+        payload.categoryId ||
+        (payload.categorySlug ? "" : current.categoryId || ""),
       coverImage: payload.coverImage ?? current.coverImage ?? "",
       status: payload.status || current.status,
-      publishedAt: payload.publishedAt || current.publishedAt?.toISOString() || ""
+      publishedAt:
+        payload.publishedAt || current.publishedAt?.toISOString() || ""
     });
-    revalidatePublicContent(article.slug);
-    if (current.slug !== article.slug) {
-      revalidatePublicContent(current.slug);
-    }
+    revalidatePublicContent(
+      [current.slug, article.slug],
+      [current.category?.slug, article.category?.slug]
+    );
     return NextResponse.json({ data: serializeArticle(article) });
   } catch (error) {
     return NextResponse.json(
@@ -66,7 +75,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ identifier: string }> }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ identifier: string }> }
+) {
   const { actor, response } = await requireAiOpsActor(request);
   if (!actor) return response;
 
@@ -77,7 +89,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   }
 
   await prisma.article.delete({ where: { id: current.id } });
-  revalidatePublicContent(current.slug);
+  revalidatePublicContent(current.slug, current.category?.slug);
 
-  return NextResponse.json({ data: { deleted: true, id: current.id, slug: current.slug } });
+  return NextResponse.json({
+    data: { deleted: true, id: current.id, slug: current.slug }
+  });
 }

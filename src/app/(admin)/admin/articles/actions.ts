@@ -37,6 +37,24 @@ export async function saveArticleAction(formData: FormData) {
       ? new Date()
       : null;
 
+  const [currentArticle, nextCategory] = await Promise.all([
+    parsed.data.id
+      ? prisma.article.findUnique({
+          where: { id: parsed.data.id },
+          select: {
+            slug: true,
+            category: { select: { slug: true } }
+          }
+        })
+      : null,
+    parsed.data.categoryId
+      ? prisma.category.findUnique({
+          where: { id: parsed.data.categoryId },
+          select: { slug: true }
+        })
+      : null
+  ]);
+
   const article = parsed.data.id
     ? await prisma.article.update({
         where: { id: parsed.data.id },
@@ -102,7 +120,10 @@ export async function saveArticleAction(formData: FormData) {
     });
   }
 
-  revalidatePublicContent(article.slug);
+  revalidatePublicContent(
+    [currentArticle?.slug, article.slug],
+    [currentArticle?.category?.slug, nextCategory?.slug]
+  );
   redirect(`/admin/articles/${article.id}?saved=1`);
 }
 
@@ -114,7 +135,12 @@ export async function deleteArticleAction(formData: FormData) {
     redirect("/admin/articles?error=missing");
   }
 
+  const article = await prisma.article.findUnique({
+    where: { id },
+    select: { category: { select: { slug: true } } }
+  });
+
   await prisma.article.delete({ where: { id } });
-  revalidatePublicContent(slug);
+  revalidatePublicContent(slug, article?.category?.slug);
   redirect("/admin/articles?deleted=1");
 }

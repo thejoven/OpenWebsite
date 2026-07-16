@@ -41,10 +41,15 @@ export function ArticleListBrowser({
   const category = searchParams.get("category") || "";
   const page = Math.max(1, Number(searchParams.get("page") || 1));
   const pageSize = 6;
-  const filtered = articles.filter((article) => !category || article.category?.slug === category);
+  const filtered = articles.filter(
+    (article) => !category || article.category?.slug === category
+  );
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const visible = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const visible = filtered.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
 
   function hrefFor(nextPage: number, nextCategory = category) {
     const params = new URLSearchParams();
@@ -63,7 +68,7 @@ export function ArticleListBrowser({
               ? "border-[#0e4fa0] bg-[#0e4fa0] text-white"
               : "border-[#cfdae8] bg-white text-[#33445a]"
           }`}
-          href={hrefFor(1, "")}
+          href={`/${locale}/articles`}
         >
           {labels.all}
         </Link>
@@ -74,7 +79,7 @@ export function ArticleListBrowser({
                 ? "border-[#0e4fa0] bg-[#0e4fa0] text-white"
                 : "border-[#cfdae8] bg-white text-[#33445a]"
             }`}
-            href={hrefFor(1, item.slug)}
+            href={`/${locale}/articles/category/${item.slug}`}
             key={item.id}
           >
             {item.name}
@@ -84,15 +89,23 @@ export function ArticleListBrowser({
 
       <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {visible.map((article) => (
-          <article className="overflow-hidden rounded-md border border-[#d9e3ef] bg-white shadow-sm" key={article.id}>
-            <Link className="focus-ring block" href={`/${locale}/articles/${article.slug}`}>
+          <article
+            className="overflow-hidden rounded-md border border-[#d9e3ef] bg-white shadow-sm"
+            key={article.id}
+          >
+            <Link
+              className="focus-ring block"
+              href={`/${locale}/articles/${article.slug}`}
+            >
               <div className="relative aspect-[16/9] bg-[#dfe8f3]">
                 <Image
                   alt={article.title}
                   className="object-cover"
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  src={article.coverImage || "/images/article-generator-room.png"}
+                  src={
+                    article.coverImage || "/images/article-generator-room.png"
+                  }
                 />
               </div>
             </Link>
@@ -100,13 +113,21 @@ export function ArticleListBrowser({
               <div className="mb-3 flex flex-wrap items-center gap-2 text-xs font-bold uppercase text-[#5a6a7f]">
                 {article.category ? <span>{article.category.name}</span> : null}
                 {article.publishedAt ? (
-                  <span>{new Intl.DateTimeFormat(locale).format(new Date(article.publishedAt))}</span>
+                  <span>
+                    {new Intl.DateTimeFormat(locale).format(
+                      new Date(article.publishedAt)
+                    )}
+                  </span>
                 ) : null}
               </div>
               <h2 className="text-xl font-black leading-tight text-[#0d1829]">
-                <Link href={`/${locale}/articles/${article.slug}`}>{article.title}</Link>
+                <Link href={`/${locale}/articles/${article.slug}`}>
+                  {article.title}
+                </Link>
               </h2>
-              <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#5a6a7f]">{article.summary}</p>
+              <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#5a6a7f]">
+                {article.summary}
+              </p>
               <Link
                 className="focus-ring mt-5 inline-flex rounded-md text-sm font-black text-[#0e4fa0]"
                 href={`/${locale}/articles/${article.slug}`}
@@ -125,7 +146,10 @@ export function ArticleListBrowser({
       ) : null}
 
       {totalPages > 1 ? (
-        <nav className="mt-10 flex items-center justify-between gap-3" aria-label="Pagination">
+        <nav
+          className="mt-10 flex items-center justify-between gap-3"
+          aria-label="Pagination"
+        >
           {safePage > 1 ? (
             <Link
               className="focus-ring rounded-md border border-[#cfdae8] bg-white px-4 py-2 text-sm font-bold"

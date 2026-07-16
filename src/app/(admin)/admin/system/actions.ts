@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { hashPassword } from "@/lib/password";
 import { revalidatePublicContent } from "@/lib/revalidate";
+import { refreshSitemapAutomation } from "@/lib/sitemap";
 import { AI_CONFIGURATION_ID } from "@/lib/ai-configuration";
 import {
   SITE_SETTINGS_ID,
@@ -210,4 +211,34 @@ export async function saveScheduledTaskAction(formData: FormData) {
   });
 
   redirect("/admin/system/tasks?saved=task");
+}
+
+export async function refreshSitemapTaskAction(formData: FormData) {
+  await requireAdmin();
+
+  const returnTo = String(formData.get("returnTo") || "tasks");
+  let target =
+    returnTo === "seo"
+      ? "/admin/system/seo?error=sitemap"
+      : "/admin/system/tasks?error=sitemap";
+
+  try {
+    const result = await refreshSitemapAutomation();
+    if (returnTo === "seo") {
+      const params = new URLSearchParams({
+        sitemap: "refreshed",
+        entries: String(result.entryCount),
+        categories: String(result.categoryPageCount),
+        articles: String(result.articlePageCount),
+        locales: String(result.localeCount)
+      });
+      target = `/admin/system/seo?${params.toString()}`;
+    } else {
+      target = "/admin/system/tasks?saved=sitemap";
+    }
+  } catch (error) {
+    console.error("Sitemap refresh failed:", error);
+  }
+
+  redirect(target);
 }

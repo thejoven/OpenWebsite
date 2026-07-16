@@ -16,7 +16,7 @@ import {
   Timer
 } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { logoutAction } from "@/app/admin/actions";
+import { logoutAction } from "@/app/(admin)/admin/actions";
 import { OwLogo } from "@/components/admin/ow-logo";
 import { Button } from "@/components/ui/button";
 

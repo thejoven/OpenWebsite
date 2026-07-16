@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
     const article = await upsertArticleFromJson(payload);
-    revalidatePublicContent(article.slug);
+    revalidatePublicContent(article.slug, article.category?.slug);
     return NextResponse.json({ data: serializeArticle(article) });
   } catch (error) {
     return NextResponse.json(

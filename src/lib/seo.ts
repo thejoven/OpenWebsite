@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { absoluteUrl, siteConfig } from "./env";
-import { locales, type AppLocale } from "./i18n";
+import { defaultLocale, locales, type AppLocale } from "./i18n";
 
 type PageMetadataInput = {
   locale: AppLocale;
@@ -13,23 +13,45 @@ type PageMetadataInput = {
 };
 
 export function localizedAlternates(path = "/") {
-  return Object.fromEntries(
-    locales.map((locale) => [locale, absoluteUrl(`/${locale}${path === "/" ? "" : path}`)])
+  const localized = Object.fromEntries(
+    locales.map((locale) => [
+      locale,
+      absoluteUrl(`/${locale}${path === "/" ? "" : path}`)
+    ])
   );
+
+  return {
+    ...localized,
+    "x-default": absoluteUrl(`/${defaultLocale}${path === "/" ? "" : path}`)
+  };
+}
+
+function createTitle(title?: string) {
+  const value = title?.trim();
+  if (!value) return siteConfig.seoTitle;
+
+  const brand = siteConfig.name.trim();
+  const escapedBrand = brand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const hasBrandSuffix = new RegExp(
+    `(?:^|[|\\-–—:]\\s*)${escapedBrand}$`,
+    "i"
+  ).test(value);
+
+  return hasBrandSuffix ? value : `${value} | ${siteConfig.name}`;
 }
 
 export function createPageMetadata(input: PageMetadataInput): Metadata {
   const path = input.path || "/";
-  const title = input.title
-    ? `${input.title} | ${siteConfig.name}`
-    : siteConfig.seoTitle;
+  const title = createTitle(input.title);
   const description = input.description || siteConfig.description;
-  const image = input.image ? absoluteUrl(input.image) : absoluteUrl(siteConfig.ogImage);
+  const image = input.image
+    ? absoluteUrl(input.image)
+    : absoluteUrl(siteConfig.ogImage);
   const canonical = absoluteUrl(`/${input.locale}${path === "/" ? "" : path}`);
 
   return {
     metadataBase: new URL(siteConfig.siteUrl),
-    title,
+    title: { absolute: title },
     description,
     keywords: input.keywords || siteConfig.keywords,
     alternates: {
